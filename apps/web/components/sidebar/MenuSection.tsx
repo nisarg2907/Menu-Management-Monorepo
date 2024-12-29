@@ -15,7 +15,7 @@ const MenuSection: React.FC<MenuSectionProps> = ({ label, isOpen, toggleSection,
       <MenuItem label={label} isOpen={isOpen} onClick={toggleSection} />
       {isOpen && (
         <div className="space-y-1 p-0">
-          {subMenuItems.map((item, index) => (
+          {subMenuItems?.map((item, index) => (
             <SubMenuItem
               key={index}
               label={item.label}

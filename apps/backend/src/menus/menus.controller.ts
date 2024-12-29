@@ -33,7 +33,7 @@ import {
       data: {
         name: string;
         depth: number;
-        parent_id?: string;
+        root_id?: string;
         menu_id?: string;
       }
     ) {
@@ -48,7 +48,7 @@ import {
         name?: string;
         depth?: number;
         order?: number;
-        parent_id?: string;
+        root_id?: string;
       }
     ) {
       return this.menuService.updateMenuItem(id, data);

@@ -12,7 +12,7 @@ export const MenuSchema: ZodType<MenuModel> = z.object({
   menu_id: z.string().nullable(),
   depth: z.number(),
   order: z.number(),
-  parent_id: z.string().nullable(),
+  root_id: z.string().nullable(),
   children: z.array(z.lazy(() => MenuSchema)), 
   created_at: z.date(),
   updated_at: z.date(),
@@ -26,7 +26,7 @@ export const CreateNewMenuSchema = z.object({
     .min(1, "Name is mandatory"),
   depth: z.number(),
   order: z.number(),
-  parent_id: z.string().nullable(),
+  root_id: z.string().nullable(),
 });
 export type CreateNewMenu = z.infer<typeof CreateNewMenuSchema>;
 

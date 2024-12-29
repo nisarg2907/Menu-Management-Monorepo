@@ -10,13 +10,13 @@ export class MenuService {
   async getAllMenus() {
     // First get all root menus (depth = 0)
     const rootMenus = await this.prisma.menu.findMany({
-      where: { parent_id: null },
+      where: { root_id: null },
       orderBy: { order: 'asc' },
     });
 
     // Recursively get children for each root menu
     const menusWithChildren = await Promise.all(
-      rootMenus.map(async (menu) => {
+      rootMenus?.map(async (menu) => {
         const children = await this.getChildrenRecursive(menu.id);
         return { ...menu, children };
       })
@@ -28,12 +28,12 @@ export class MenuService {
   // Helper function to recursively get children
   private async getChildrenRecursive(parentId: string) {
     const children = await this.prisma.menu.findMany({
-      where: { parent_id: parentId },
+      where: { root_id: parentId },
       orderBy: { order: 'asc' },
     });
 
     const childrenWithSubChildren = await Promise.all(
-      children.map(async (child) => {
+      children?.map(async (child) => {
         const subChildren = await this.getChildrenRecursive(child.id);
         return { ...child, children: subChildren };
       })
@@ -63,13 +63,13 @@ export class MenuService {
     if (depth < 0) return [];
 
     const children = await this.prisma.menu.findMany({
-      where: { parent_id: parentId },
+      where: { root_id: parentId },
       orderBy: { order: 'asc' },
     });
 
     if (depth > 0) {
       const childrenWithSubChildren = await Promise.all(
-        children.map(async (child) => {
+        children?.map(async (child) => {
           const subChildren = await this.getChildrenWithDepth(child.id, depth - 1);
           return { ...child, children: subChildren };
         })
@@ -84,12 +84,12 @@ export class MenuService {
   async createMenuItem(data: {
     name: string;
     depth: number;
-    parent_id?: string;
+    root_id?: string;
     menu_id?: string;
   }) {
     // Get the highest order number for the given parent
     const lastItem = await this.prisma.menu.findFirst({
-      where: { parent_id: data.parent_id || null },
+      where: { root_id: data.root_id || null },
       orderBy: { order: 'desc' },
     });
 
@@ -110,7 +110,7 @@ export class MenuService {
       name?: string;
       depth?: number;
       order?: number;
-      parent_id?: string;
+      root_id?: string;
     }
   ) {
     return this.prisma.menu.update({
@@ -129,7 +129,7 @@ export class MenuService {
 
   // Reorder menu items
   async reorderMenuItems(items: { id: string; order: number }[]) {
-    const updates = items.map((item) =>
+    const updates = items?.map((item) =>
       this.prisma.menu.update({
         where: { id: item.id },
         data: { order: item.order },

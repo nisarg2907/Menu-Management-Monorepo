@@ -37,13 +37,13 @@ const SidebarBody: React.FC<SidebarBodyProps> = ({
 
   return (
     <div className="flex flex-col mt-8 space-y-1 gap-2 m-4 rounded-lg">
-      {sections.map((section) => (
+      {sections?.map((section) => (
         <MenuSection
           key={section.label}
           label={section.label}
           isOpen={openSections[section.label] as boolean}
           toggleSection={() => toggleSection(section.label)}
-          subMenuItems={section.subMenuItems.map((subMenuLabel) => ({
+          subMenuItems={section.subMenuItems?.map((subMenuLabel) => ({
             label: subMenuLabel,
             isSelected: selectedSubMenu === subMenuLabel,
             onClick: () => setSelectedSubMenu(subMenuLabel),

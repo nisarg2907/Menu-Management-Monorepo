@@ -15,12 +15,12 @@ model Menu {
   name        String
   depth       Int
   order       Int    
-  parent_id   String?
+  root_id   String?
   created_at  DateTime @default(now())
   updated_at  DateTime @updatedAt
 
-  parent    Menu?   @relation("MenuToParent", fields: [parent_id], references: [id], onDelete: Cascade)
+  parent    Menu?   @relation("MenuToParent", fields: [root_id], references: [id], onDelete: Cascade)
   children  Menu[]  @relation("MenuToParent")
 
-  @@index([parent_id])
+  @@index([root_id])
 }

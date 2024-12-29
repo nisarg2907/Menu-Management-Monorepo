@@ -1,21 +1,33 @@
-export type MenuItem = {
-    id: string;
-    label: string;
-    badge?: string;
-    children?: MenuItem[];
-    depth: number;
-  };
-  
-  export type TreeItemProps = {
-    item: MenuItem;
-    isExpanded: boolean;
-    onToggle: (id: string) => void;
-    expandedItems: string[];
-  };
-  
-  export type TreeViewProps = {
-    items: MenuItem[];
-    expandedItems: string[];
-    onToggle: (id: string) => void;
-  };
-  
+// types/index.ts
+export interface MenuItem {
+  id: string;
+  name: string;
+  depth: number;
+  order: number;
+  root_id: string | null;
+  menu_id: string | null;
+  children?: MenuItem[];
+  badge?: string;
+  label?: string; // For backward compatibility
+}
+
+export interface TreeViewProps {
+  items: MenuItem[];
+  expandedItems: string[];
+  onToggle: (id: string) => void;
+  onAddChild: (parentId: string) => void;
+  onDelete: (id: string) => void;
+  onSelect: (id: string) => void;
+  selectedId: string | null;
+}
+
+export interface TreeItemProps {
+  item: MenuItem;
+  isExpanded: boolean;
+  onToggle: (id: string) => void;
+  expandedItems: string[];
+  onAddChild: (parentId: string) => void;
+  onDelete: (id: string) => void;
+  onSelect: (id: string) => void;
+  isSelected: boolean;
+}
