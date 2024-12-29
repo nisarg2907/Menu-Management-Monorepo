@@ -2,7 +2,7 @@
     "apps": [
       {
         "name": "web",
-        "script": "yarn",
+        "script": "pnpm",
         "args": "start", 
         "cwd": "apps/web", 
         "env": {
@@ -12,7 +12,7 @@
       },
       {
         "name": "backend",
-        "script": "yarn",
+        "script": "pnpm",
         "args": "start",
         "cwd": "apps/backend",
         "env": {
