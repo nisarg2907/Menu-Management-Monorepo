@@ -6,8 +6,7 @@
         "args": "start", 
         "cwd": "apps/web", 
         "env": {
-          "NODE_ENV": "production",
-          "PORT": 3000
+          "NODE_ENV": "production"
         }
       },
       {
