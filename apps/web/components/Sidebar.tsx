@@ -24,11 +24,26 @@ const MenuItem: React.FC<MenuItemProps> = ({ label, isOpen = false, onClick }) =
 
 type SubMenuItemProps = {
   label: string;
+  isSelected: boolean;
+  onClick: () => void;
 };
 
-const SubMenuItem: React.FC<SubMenuItemProps> = ({ label }) => {
+const SubMenuItem: React.FC<SubMenuItemProps> = ({ label, isSelected, onClick }) => {
   return (
-    <div className="flex items-center py-2 pl-3  text-sm rounded-lg text-[#667085]">
+    <div
+      className={`flex items-center py-2 pl-3 text-sm rounded-lg ${
+        isSelected ? 'bg-[#9FF443] text-black' : 'text-[#667085]'
+      }`}
+      style={{
+        width: '208px',
+        height: '48px',
+        padding: '12px 0 0 0',
+        gap: '16px',
+        borderRadius: '16px 0 0 0',
+        opacity: isSelected ? 1 : 1,
+      }}
+      onClick={onClick}
+    >
       <Image src={SubmenuItemLogo} alt="SubMenu" width={16} height={16} />
       <span className="ml-2">{label}</span>
     </div>
@@ -47,59 +62,97 @@ const SidebarHeader: React.FC = () => {
 type SidebarBodyProps = {
   openSections: { [key: string]: boolean };
   toggleSection: (section: string) => void;
+  selectedSubMenu: string;
+  setSelectedSubMenu: (label: string) => void;
 };
 
-const SidebarBody: React.FC<SidebarBodyProps> = ({ openSections, toggleSection }) => {
-    return (
-      <div className="flex flex-col mt-8 space-y-1 gap-2 m-4 rounded-lg">
-        {/* Systems */}
-        <div
-          className={`rounded-lg ${
-            openSections.systems ? 'bg-[#1E293B] text-white' : ''
-          }`}
-        >
-          <MenuItem
-            label="Systems"
-            isOpen={openSections.systems}
-            onClick={() => toggleSection('systems')}
-          />
-          {openSections.systems && (
-            <div className="space-y-1">
-              <SubMenuItem label="System Code" />
-              <SubMenuItem label="Properties" />
-              <SubMenuItem label="Menus" />
-              <SubMenuItem label="API List" />
-            </div>
-          )}
-        </div>
-  
-        {/* Users & Groups */}
-        <div
-          className={`rounded-lg ${
-            openSections.usersGroups ? 'bg-[#1E293B] text-white' : ''
-          }`}
-        >
-          <MenuItem
-            label="Users & Groups"
-            isOpen={openSections.usersGroups}
-            onClick={() => toggleSection('usersGroups')}
-          />
-          {openSections.usersGroups && (
-            <div className="space-y-1">
-              <SubMenuItem label="Users" />
-              <SubMenuItem label="User Account Registration" />
-              <SubMenuItem label="Groups" />
-              <SubMenuItem label="User Group Registration" />
-            </div>
-          )}
-        </div>
-  
-        {/* Competition */}
-        <MenuItem label="Competition" onClick={() => {}} />
+const SidebarBody: React.FC<SidebarBodyProps> = ({
+  openSections,
+  toggleSection,
+  selectedSubMenu,
+  setSelectedSubMenu,
+}) => {
+  return (
+    <div className="flex flex-col mt-8 space-y-1 gap-2 m-4 rounded-lg">
+      {/* Systems */}
+      <div
+        className={`rounded-lg ${
+          openSections.systems ? 'bg-[#1E293B] text-white' : ''
+        }`}
+      >
+        <MenuItem
+          label="Systems"
+          isOpen={openSections.systems}
+          onClick={() => toggleSection('systems')}
+        />
+        {openSections.systems && (
+          <div className="space-y-1">
+            <SubMenuItem
+              label="System Code"
+              isSelected={selectedSubMenu === 'System Code'}
+              onClick={() => setSelectedSubMenu('System Code')}
+            />
+            <SubMenuItem
+              label="Properties"
+              isSelected={selectedSubMenu === 'Properties'}
+              onClick={() => setSelectedSubMenu('Properties')}
+            />
+            <SubMenuItem
+              label="Menus"
+              isSelected={selectedSubMenu === 'Menus'}
+              onClick={() => setSelectedSubMenu('Menus')}
+            />
+            <SubMenuItem
+              label="API List"
+              isSelected={selectedSubMenu === 'API List'}
+              onClick={() => setSelectedSubMenu('API List')}
+            />
+          </div>
+        )}
       </div>
-    );
-  };
-  
+
+      {/* Users & Groups */}
+      <div
+        className={`rounded-lg ${
+          openSections.usersGroups ? 'bg-[#1E293B] text-white' : ''
+        }`}
+      >
+        <MenuItem
+          label="Users & Groups"
+          isOpen={openSections.usersGroups}
+          onClick={() => toggleSection('usersGroups')}
+        />
+        {openSections.usersGroups && (
+          <div className="space-y-1">
+            <SubMenuItem
+              label="Users"
+              isSelected={selectedSubMenu === 'Users'}
+              onClick={() => setSelectedSubMenu('Users')}
+            />
+            <SubMenuItem
+              label="User Account Registration"
+              isSelected={selectedSubMenu === 'User Account Registration'}
+              onClick={() => setSelectedSubMenu('User Account Registration')}
+            />
+            <SubMenuItem
+              label="Groups"
+              isSelected={selectedSubMenu === 'Groups'}
+              onClick={() => setSelectedSubMenu('Groups')}
+            />
+            <SubMenuItem
+              label="User Group Registration"
+              isSelected={selectedSubMenu === 'User Group Registration'}
+              onClick={() => setSelectedSubMenu('User Group Registration')}
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Competition */}
+      <MenuItem label="Competition" onClick={() => {}} />
+    </div>
+  );
+};
 
 const SidebarFooter: React.FC = () => {
   return <div className="p-4">{/* Add any footer content here */}</div>;
@@ -110,6 +163,7 @@ const Sidebar: React.FC = () => {
     systems: false,
     usersGroups: false,
   });
+  const [selectedSubMenu, setSelectedSubMenu] = React.useState<string>('');
 
   const toggleSection = (section: string) => {
     setOpenSections((prev) => ({
@@ -119,9 +173,14 @@ const Sidebar: React.FC = () => {
   };
 
   return (
-    <aside className="w-[240px] bg-[#101828] rounded-lg">
+    <aside className="w-[240px] bg-[#101828] max-h-screen  rounded-lg">
       <SidebarHeader />
-      <SidebarBody openSections={openSections} toggleSection={toggleSection} />
+      <SidebarBody
+        openSections={openSections}
+        toggleSection={toggleSection}
+        selectedSubMenu={selectedSubMenu}
+        setSelectedSubMenu={setSelectedSubMenu}
+      />
       <SidebarFooter />
     </aside>
   );
