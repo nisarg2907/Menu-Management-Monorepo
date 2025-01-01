@@ -10,6 +10,7 @@ export const MenuSchema: ZodType<MenuModel> = z.object({
     .string({ required_error: "Name is mandatory" })
     .min(1, "Name is mandatory"),
   menu_id: z.string().nullable(),
+  parent_id:z.string().nullable(),
   depth: z.number(),
   order: z.number(),
   root_id: z.string().nullable(),
@@ -27,6 +28,7 @@ export const CreateNewMenuSchema = z.object({
   depth: z.number(),
   order: z.number(),
   root_id: z.string().nullable(),
+  parent_id:z.string().nullable()
 });
 export type CreateNewMenu = z.infer<typeof CreateNewMenuSchema>;
 

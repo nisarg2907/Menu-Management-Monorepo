@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MenuItem } from '../../types';
+import { menuApi } from '../../utils/api';
+import { Loader2 } from 'lucide-react';
 
 interface FormProps {
   selectedItem: MenuItem | null;
@@ -11,16 +13,35 @@ const Form: React.FC<FormProps> = ({ selectedItem, onSave, onCancel }) => {
   const [formData, setFormData] = useState({
     name: '',
     depth: 0,
+    parentName: '',
+    rootName: '',
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (selectedItem) {
-      setFormData({
-        name: selectedItem.name,
-        depth: selectedItem.depth,
-      });
-    }
+    const fetchData = async () => {
+      if (selectedItem) {
+        console.log("selected item", selectedItem);
+        setIsLoading(true);
+        try {
+          const res = await menuApi.getMenuWithDepth(selectedItem.id, selectedItem.depth);
+          console.log("res", res.data.parent.name, res.data.root.name);
+          setFormData({
+            name: selectedItem.name,
+            depth: selectedItem.depth,
+            parentName: res.data.parent.name,
+            rootName: res.data.root.name,
+          });
+        } catch (error) {
+          console.error("Error fetching menu data:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    fetchData();
   }, [selectedItem]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -43,6 +64,14 @@ const Form: React.FC<FormProps> = ({ selectedItem, onSave, onCancel }) => {
     );
   }
 
+  if (isLoading) {
+    return (
+      <div className="w-[350px] bg-gray-50 p-6 rounded-lg text-center text-gray-500">
+        <Loader2 className='animate-spin'/>
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} className="w-[350px] bg-white p-6 rounded-lg">
       <div className="space-y-6">
@@ -52,6 +81,24 @@ const Form: React.FC<FormProps> = ({ selectedItem, onSave, onCancel }) => {
             type="text"
             className="w-full p-2 border border-gray-300 rounded-lg bg-gray-50"
             value={selectedItem.id}
+            disabled
+          />
+        </div>
+        {/* <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Parent Name</label>
+          <input
+            type="text"
+            className="w-full p-2 border border-gray-300 rounded-lg bg-gray-50"
+            value={formData.parentName}
+            disabled
+          />
+        </div> */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Root</label>
+          <input
+            type="text"
+            className="w-full p-2 border border-gray-300 rounded-lg bg-gray-50"
+            value={formData.rootName}
             disabled
           />
         </div>

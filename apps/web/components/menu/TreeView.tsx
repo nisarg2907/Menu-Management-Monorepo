@@ -12,7 +12,7 @@ const TreeView: React.FC<TreeViewProps> = ({
   selectedId
 }) => {
   return (
-    <div className="tree-view pl-4">
+    <div className="tree-view">
       {items?.map((item) => (
         <TreeItem
           key={item.id}

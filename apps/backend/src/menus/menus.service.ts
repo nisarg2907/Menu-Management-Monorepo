@@ -46,6 +46,18 @@ export class MenuService {
   async getMenuWithDepth(menuId: string, depth: number) {
     const menu = await this.prisma.menu.findUnique({
       where: { id: menuId },
+      select:{
+        parent:{
+          select:{
+            name:true
+          }
+        },
+        root:{
+          select:{
+            name:true
+          }
+        }
+      }
     });
 
     if (!menu) return null;
@@ -79,29 +91,41 @@ export class MenuService {
 
     return children;
   }
-
-  // Create new menu item
   async createMenuItem(data: {
     name: string;
     depth: number;
     root_id?: string;
     menu_id?: string;
   }) {
-    // Get the highest order number for the given parent
+    let rootId = null;
+  
+    if (data.root_id) {
+      const parent = await this.prisma.menu.findUnique({
+        where: { id: data.root_id },
+      });
+  
+      if (parent) {
+        rootId = parent.root_id || parent.id; 
+      }
+    }
+  
     const lastItem = await this.prisma.menu.findFirst({
-      where: { root_id: data.root_id || null },
+      where: { parent_id: data.root_id || null },
       orderBy: { order: 'desc' },
     });
-
+  
     const order = lastItem ? lastItem.order + 1 : 0;
-
+  
     return this.prisma.menu.create({
       data: {
         ...data,
+        parent_id: data.root_id || null,
+        root_id: rootId,
         order,
       },
     });
   }
+  
 
   // Update menu item
   async updateMenuItem(

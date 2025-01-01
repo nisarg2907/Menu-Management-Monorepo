@@ -15,4 +15,8 @@
     font-weight: normal; 
     font-style: italic;
   }
+  .tree-view .tree-item {
+    padding-left: calc(var(--tree-depth) * 1rem); /* Adjust padding based on depth */
+  }
+  
   

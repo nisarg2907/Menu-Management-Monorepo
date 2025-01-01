@@ -5,6 +5,7 @@ export interface MenuItem {
   depth: number;
   order: number;
   root_id: string | null;
+  parent_id:string | null;
   menu_id: string | null;
   children?: MenuItem[];
   badge?: string;

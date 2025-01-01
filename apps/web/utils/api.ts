@@ -1,4 +1,3 @@
-// utils/api.ts
 import axios from 'axios';
 
 const api = axios.create({
@@ -22,6 +21,7 @@ interface CreateMenuData {
   depth: number;
   root_id?: string;
   menu_id?: string;
+  parent_id?:string;
 }
 
 interface UpdateMenuData {

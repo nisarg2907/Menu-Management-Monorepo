@@ -1,14 +1,16 @@
 "use client";
 import React from "react";
-import { SidebarProvider, useSidebar } from "../context/SidebarContext";
+import { SidebarProvider } from "../context/SidebarContext";
 import Sidebar from "../components/Sidebar";
 import "./globals.css";
-
+import { Toaster } from 'react-hot-toast';
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body>
         <SidebarProvider>
+          <Toaster  position="top-right" 
+          reverseOrder={false} />
           <ContentWrapper>{children}</ContentWrapper>
         </SidebarProvider>
       </body>
@@ -17,8 +19,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 }
 
 const ContentWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // const { isSidebarOpen } = useSidebar();
-
   return (
     <div className="flex max-h-screen">
       <Sidebar />

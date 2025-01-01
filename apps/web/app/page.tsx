@@ -1,4 +1,3 @@
-// pages/index.tsx
 "use client"
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
@@ -26,7 +25,9 @@ const Home: React.FC = () => {
     try {
       setLoading(true);
       const response = await menuApi.getAllMenus();
+     
       setMenuData(response.data);
+      console.log("menudata",response.data)
       if (response.data.length > 0) {
         setSelectedMenu(response.data[0].id);
         setExpandedItems([response.data[0].id]);
@@ -38,6 +39,7 @@ const Home: React.FC = () => {
     }
   };
 
+
   const handleAddChild = async (parentId: string) => {
     try {
       const parent = findMenuItem(menuData, parentId);
@@ -47,9 +49,10 @@ const Home: React.FC = () => {
         name: 'New Item',
         depth: parent.depth + 1,
         root_id: parentId,
+        parent_id:parent.id
       });
 
-      await fetchMenus(); // Refresh the tree
+      await fetchMenus();
       toast.success('Item added successfully');
       setExpandedItems([...expandedItems, parentId]);
       setSelectedItem(newItem.data);
@@ -59,15 +62,13 @@ const Home: React.FC = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (window.confirm('Are you sure you want to delete this item?')) {
-      try {
-        await menuApi.deleteMenuItem(id);
-        await fetchMenus();
-        toast.success('Item deleted successfully');
-        setSelectedItem(null);
-      } catch  {
-        toast.error('Failed to delete item');
-      }
+    try {
+      await menuApi.deleteMenuItem(id);
+      await fetchMenus();
+      toast.success('Item deleted successfully');
+      setSelectedItem(null);
+    } catch {
+      toast.error('Failed to delete item');
     }
   };
 
@@ -103,21 +104,25 @@ const Home: React.FC = () => {
       items.reduce<string[]>((acc, item) => 
         [...acc, item.id, ...(item.children ? getAllItemIds(item.children) : [])], []);
     setExpandedItems(getAllItemIds(menuData));
+    toast.success('All items expanded');
   };
 
   const handleCollapseAll = () => {
     setExpandedItems([]);
+    toast.success('All items collapsed');
   };
 
   const handleToggle = (id: string) => {
     setExpandedItems(prev =>
       prev.includes(id) ? prev.filter(itemId => itemId !== id) : [...prev, id]
     );
+    // toast.success(`Item ${prev.includes(id) ? 'collapsed' : 'expanded'}`);
   };
 
   const handleSelect = (id: string) => {
     const item = findMenuItem(menuData, id);
     setSelectedItem(item);
+    // toast.success(`Item ${item ? 'selected' : 'deselected'}`);
   };
 
   return (
@@ -155,10 +160,10 @@ const Home: React.FC = () => {
           )}
         </div>
         <Form
-          selectedItem={selectedItem}
-          onSave={handleUpdateItem}
-          onCancel={() => setSelectedItem(null)}
-        />
+  selectedItem={selectedItem}
+  onSave={handleUpdateItem}
+  onCancel={() => setSelectedItem(null)}
+/>;
       </div>
     </div>
   );

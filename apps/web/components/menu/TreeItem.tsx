@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { TreeItemProps } from '../../types';
-import { PlusCircle, Trash2 } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
+import AddIcon from '../../assets/AddIcon.svg';
+import Image from 'next/image';
+import Modal from '../ui/Modal';
 
 const TreeItem: React.FC<TreeItemProps> = ({
   item,
@@ -12,20 +15,46 @@ const TreeItem: React.FC<TreeItemProps> = ({
   onSelect,
   isSelected,
 }) => {
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
   const hasChildren = item.children && item.children.length > 0;
+
+  const handleAddChild = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsAddModalOpen(true);
+  };
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsDeleteModalOpen(true);
+  };
+
+  const confirmAddChild = () => {
+    console.log(item)
+    onAddChild(item.id);
+    setIsAddModalOpen(false);
+  };
+
+  const confirmDelete = () => {
+    onDelete(item.id);
+    setIsDeleteModalOpen(false);
+  };
 
   return (
     <div className="relative">
       <div
-        className={`flex items-center py-1 group ${hasChildren ? 'cursor-pointer' : ''} ${
-          isSelected ? 'bg-blue-50' : ''
+        className={`flex items-center py-2 pl-${item.depth * 4} group ${
+          isSelected ? 'bg-blue-100 rounded-md' : ''
         }`}
         onClick={() => onSelect(item.id)}
       >
         <div className="flex items-center flex-1">
           {hasChildren && (
             <svg
-              className={`w-4 h-4 transform transition-transform ${isExpanded ? 'rotate-90' : ''}`}
+              className={`w-4 h-4 mr-2 transform transition-transform ${
+                isExpanded ? 'rotate-90' : ''
+              }`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -37,38 +66,25 @@ const TreeItem: React.FC<TreeItemProps> = ({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
             </svg>
           )}
-          <span className="ml-2 text-gray-700">{item.name}</span>
-          {item.badge && (
-            <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-800 rounded-full text-xs">
-              {item.badge}
-            </span>
-          )}
-        </div>
-        
-        <div className="opacity-0 group-hover:opacity-100 flex items-center gap-2">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onAddChild(item.id);
-            }}
-            className="p-1 hover:bg-blue-100 rounded"
-          >
-            <PlusCircle className="w-4 h-4 text-blue-600" />
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(item.id);
-            }}
-            className="p-1 hover:bg-red-100 rounded"
-          >
-            <Trash2 className="w-4 h-4 text-red-600" />
-          </button>
+          <span className="text-gray-700 font-medium">{item.name}</span>
+          <div className="opacity-0 group-hover:opacity-100 flex items-center gap-2 ml-auto">
+            <button
+              onClick={handleAddChild}
+              className="p-1 hover:bg-blue-100 rounded"
+            >
+              <Image src={AddIcon} alt="Add" />
+            </button>
+            <button
+              onClick={handleDelete}
+              className="p-1 hover:bg-red-100 rounded"
+            >
+              <Trash2 className="w-4 h-4 text-red-600" />
+            </button>
+          </div>
         </div>
       </div>
-      
       {hasChildren && isExpanded && (
-        <div className="ml-4 border-l border-gray-200 pl-4">
+        <div className="ml-6 border-l border-gray-300">
           {item.children?.map((child) => (
             <TreeItem
               key={child.id}
@@ -84,6 +100,46 @@ const TreeItem: React.FC<TreeItemProps> = ({
           ))}
         </div>
       )}
+      <Modal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        title="Add Child"
+      >
+        <div className="flex justify-end gap-4">
+          <button
+            onClick={confirmAddChild}
+            className="py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Confirm
+          </button>
+          <button
+            onClick={() => setIsAddModalOpen(false)}
+            className="py-2 px-4 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </Modal>
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={() => setIsDeleteModalOpen(false)}
+        title="Delete Item"
+      >
+        <div className="flex justify-end gap-4">
+          <button
+            onClick={confirmDelete}
+            className="py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Confirm
+          </button>
+          <button
+            onClick={() => setIsDeleteModalOpen(false)}
+            className="py-2 px-4 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+          >
+            Cancel
+          </button>
+        </div>
+      </Modal>
     </div>
   );
 };
