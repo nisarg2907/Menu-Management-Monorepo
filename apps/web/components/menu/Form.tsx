@@ -26,12 +26,12 @@ const Form: React.FC<FormProps> = ({ selectedItem, onSave, onCancel }) => {
         setIsLoading(true);
         try {
           const res = await menuApi.getMenuWithDepth(selectedItem.id, selectedItem.depth);
-          console.log("res", res.data.parent.name, res.data.root.name);
+       
           setFormData({
-            name: selectedItem.name,
+            name: selectedItem?.name,
             depth: selectedItem.depth,
-            parentName: res.data.parent.name,
-            rootName: res.data.root.name,
+            parentName: res.data.parent?.name,
+            rootName: res.data.root?.name,
           });
         } catch (error) {
           console.error("Error fetching menu data:", error);

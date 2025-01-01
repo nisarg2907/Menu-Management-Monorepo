@@ -38,28 +38,45 @@ const Home: React.FC = () => {
       setLoading(false);
     }
   };
-
-
   const handleAddChild = async (parentId: string) => {
     try {
       const parent = findMenuItem(menuData, parentId);
-      if (!parent) return;
-
+      if (!parent) {
+        console.error('Parent not found:', parentId);
+        return;
+      }
+  
+      console.log('Parent Data:', parent); // Log parent details
+  
       const newItem = await menuApi.createMenuItem({
         name: 'New Item',
-        depth: parent.depth + 1,
-        root_id: parentId,
-        parent_id:parent.id
+        depth: parent.depth + 1, // Child's depth is parent's depth + 1
+        root_id: parent.root_id || parent.id, // Use parent's root_id or parent's ID
+        parent_id: parent.id, // Set parent ID
       });
-
-      await fetchMenus();
+  
+      console.log('New Item Response:', newItem.data); // Log new item data
+  
+      // Add the new child to the parent's children directly
+      const updatedMenuData = menuData.map((item) =>
+        item.id === parentId
+          ? {
+              ...item,
+              children: [...(item.children || []), newItem.data], // Append the new child
+            }
+          : item
+      );
+  
+      setMenuData(updatedMenuData); // Update state with the new menu structure
       toast.success('Item added successfully');
-      setExpandedItems([...expandedItems, parentId]);
-      setSelectedItem(newItem.data);
-    } catch {
+      setExpandedItems([...expandedItems, parentId]); // Expand the parent to show the new child
+      setSelectedItem(newItem.data); // Select the newly created item
+    } catch (error) {
+      console.error('Error adding child:', error);
       toast.error('Failed to add item');
     }
   };
+  
 
   const handleDelete = async (id: string) => {
     try {
@@ -75,7 +92,7 @@ const Home: React.FC = () => {
   const handleUpdateItem = async (id: string, data: Partial<MenuItem>) => {
     try {
       const updateData: UpdateMenuData = {
-        name: data.name,
+        name: data?.name,
         depth: data.depth,
         order: data.order,
         root_id: data.root_id ?? undefined,
@@ -104,12 +121,12 @@ const Home: React.FC = () => {
       items.reduce<string[]>((acc, item) => 
         [...acc, item.id, ...(item.children ? getAllItemIds(item.children) : [])], []);
     setExpandedItems(getAllItemIds(menuData));
-    toast.success('All items expanded');
+    // toast.success('All items expanded');
   };
 
   const handleCollapseAll = () => {
     setExpandedItems([]);
-    toast.success('All items collapsed');
+    // toast.success('All items collapsed');
   };
 
   const handleToggle = (id: string) => {

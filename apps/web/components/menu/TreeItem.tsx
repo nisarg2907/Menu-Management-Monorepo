@@ -31,7 +31,6 @@ const TreeItem: React.FC<TreeItemProps> = ({
   };
 
   const confirmAddChild = () => {
-    console.log(item)
     onAddChild(item.id);
     setIsAddModalOpen(false);
   };
@@ -66,7 +65,7 @@ const TreeItem: React.FC<TreeItemProps> = ({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
             </svg>
           )}
-          <span className="text-gray-700 font-medium">{item.name}</span>
+          <span className="text-gray-700 font-medium">{item?.name}</span>
           <div className="opacity-0 group-hover:opacity-100 flex items-center gap-2 ml-auto">
             <button
               onClick={handleAddChild}

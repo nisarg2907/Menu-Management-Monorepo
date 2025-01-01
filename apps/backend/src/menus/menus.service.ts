@@ -6,26 +6,32 @@ import { Menu } from '@repo/types';
 export class MenuService {
   constructor(private prisma: PrismaService) {}
 
-  // Get all menus hierarchically
   async getAllMenus() {
-    // First get all root menus (depth = 0)
-    const rootMenus = await this.prisma.menu.findMany({
-      where: { root_id: null },
-      orderBy: { order: 'asc' },
+    const allMenus = await this.prisma.menu.findMany({
+      orderBy: [{ depth: 'asc' }, { order: 'asc' }],
     });
-
-    // Recursively get children for each root menu
-    const menusWithChildren = await Promise.all(
-      rootMenus?.map(async (menu) => {
-        const children = await this.getChildrenRecursive(menu.id);
-        return { ...menu, children };
-      })
-    );
-
-    return menusWithChildren;
+  
+    const menuMap = new Map<string, any>();
+  
+    allMenus.forEach((menu) => {
+      menuMap.set(menu.id, { ...menu, children: [] });
+    });
+  
+    const roots: any[] = [];
+    allMenus.forEach((menu) => {
+      if (menu.parent_id) {
+        const parent = menuMap.get(menu.parent_id);
+        if (parent) {
+          parent.children.push(menuMap.get(menu.id));
+        }
+      } else {
+        roots.push(menuMap.get(menu.id));
+      }
+    });
+  
+    return roots;
   }
-
-  // Helper function to recursively get children
+  
   private async getChildrenRecursive(parentId: string) {
     const children = await this.prisma.menu.findMany({
       where: { root_id: parentId },
@@ -42,7 +48,6 @@ export class MenuService {
     return childrenWithSubChildren;
   }
 
-  // Get specific menu with its children up to specified depth
   async getMenuWithDepth(menuId: string, depth: number) {
     const menu = await this.prisma.menu.findUnique({
       where: { id: menuId },
@@ -70,7 +75,6 @@ export class MenuService {
     return menu;
   }
 
-  // Helper function to get children with specific depth
   private async getChildrenWithDepth(parentId: string, depth: number) {
     if (depth < 0) return [];
 
@@ -91,43 +95,50 @@ export class MenuService {
 
     return children;
   }
+
   async createMenuItem(data: {
     name: string;
     depth: number;
     root_id?: string;
     menu_id?: string;
+    parent_id?: string;
   }) {
     let rootId = null;
   
-    if (data.root_id) {
+    if (data.parent_id) {
       const parent = await this.prisma.menu.findUnique({
-        where: { id: data.root_id },
+        where: { id: data.parent_id },
       });
   
       if (parent) {
-        rootId = parent.root_id || parent.id; 
+        rootId = parent.root_id || parent.id;
       }
     }
   
     const lastItem = await this.prisma.menu.findFirst({
-      where: { parent_id: data.root_id || null },
+      where: { parent_id: data.parent_id || null },
       orderBy: { order: 'desc' },
     });
   
     const order = lastItem ? lastItem.order + 1 : 0;
   
-    return this.prisma.menu.create({
+    const newMenuItem = await this.prisma.menu.create({
       data: {
-        ...data,
-        parent_id: data.root_id || null,
+        name: data.name,
+        depth: data.depth,
+        parent_id: data.parent_id || null,
         root_id: rootId,
         order,
       },
+      include: {
+        parent: true,
+        root: true,
+      },
     });
-  }
   
+    return newMenuItem;
+  }
 
-  // Update menu item
   async updateMenuItem(
     id: string,
     data: {
@@ -143,15 +154,12 @@ export class MenuService {
     });
   }
 
-  // Delete menu item and its children
   async deleteMenuItem(id: string) {
-    // Prisma will handle cascading deletes as specified in the schema
     return this.prisma.menu.delete({
       where: { id },
     });
   }
 
-  // Reorder menu items
   async reorderMenuItems(items: { id: string; order: number }[]) {
     const updates = items?.map((item) =>
       this.prisma.menu.update({
