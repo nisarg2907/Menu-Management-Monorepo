@@ -20,14 +20,14 @@ const ExpandCollapseControls: React.FC<ExpandCollapseControlsProps> = ({
       <button
         onClick={onExpandAll}
         disabled={isLoading}
-        className="px-4 py-2 bg-gray-900 text-white rounded-lg text-sm hover:bg-gray-800 transition-colors disabled:opacity-50"
+        className="px-4 py-2 bg-gray-900 text-white rounded-full text-sm hover:bg-gray-800 transition-colors disabled:opacity-50"
       >
         {expandLabel}
       </button>
       <button
         onClick={onCollapseAll}
         disabled={isLoading}
-        className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg text-sm hover:bg-gray-50 transition-colors disabled:opacity-50"
+        className="px-4 py-2 bg-white border border-gray-300 text-gray-700 rounded-full text-sm hover:bg-gray-50 transition-colors disabled:opacity-50"
       >
         {collapseLabel}
       </button>

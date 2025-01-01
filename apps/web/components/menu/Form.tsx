@@ -84,15 +84,6 @@ const Form: React.FC<FormProps> = ({ selectedItem, onSave, onCancel }) => {
             disabled
           />
         </div>
-        {/* <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Parent Name</label>
-          <input
-            type="text"
-            className="w-full p-2 border border-gray-300 rounded-lg bg-gray-50"
-            value={formData.parentName}
-            disabled
-          />
-        </div> */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Root</label>
           <input
@@ -124,18 +115,18 @@ const Form: React.FC<FormProps> = ({ selectedItem, onSave, onCancel }) => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="flex-1 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+            className="flex-1 w-full py-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors disabled:opacity-50"
           >
             {isSubmitting ? 'Saving...' : 'Save'}
           </button>
-          <button
+          {/* <button
             type="button"
             onClick={onCancel}
             disabled={isSubmitting}
             className="flex-1 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors disabled:opacity-50"
           >
             Cancel
-          </button>
+          </button> */}
         </div>
       </div>
     </form>

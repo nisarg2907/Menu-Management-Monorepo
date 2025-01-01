@@ -3,10 +3,13 @@ import SidebarHeader from './sidebar/SidebarHeader';
 import SidebarBody from './sidebar/SidebarBody';
 import SidebarFooter from './sidebar/SidebarFooter';
 import { useSidebar } from '../context/SidebarContext';
-import ToggleSvg from '../assets/menu_open.svg';
+import OpenSidebar from '../assets/menu_open.svg'
 import Image from 'next/image';
+import useIsMobile from '../hooks/useMobile';
+
 const Sidebar: React.FC = () => {
   const { isSidebarOpen, toggleSidebar } = useSidebar();
+  const isMobile = useIsMobile();
 
   React.useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -34,35 +37,50 @@ const Sidebar: React.FC = () => {
     }));
   };
 
+  const sidebarWidth = isSidebarOpen 
+    ? isMobile ? 'w-[180px]' : 'w-[240px]' // Smaller width on mobile
+    : 'w-12';
+
   return (
-    <div
-      className={`transition-all m-4 duration-300 ${
-        isSidebarOpen ? 'w-[240px]' : 'w-0'
-      } bg-[#101828]  max-h-screen  top-0 left-0 rounded-lg overflow-hidden`}
-    >
-      {isSidebarOpen && (
-        <>
-          <SidebarHeader />
-          <SidebarBody
-            openSections={openSections}
-            toggleSection={toggleSection}
-            selectedSubMenu={selectedSubMenu}
-            setSelectedSubMenu={setSelectedSubMenu}
-          />
-          <SidebarFooter />
-        </>
-      )}
-      {!isSidebarOpen && (
-        <button
+    <>
+      {/* Backdrop - only visible on mobile when sidebar is open */}
+      {isSidebarOpen && isMobile && (
+        <div 
+          className="fixed inset-0 bg-white z-40" 
           onClick={toggleSidebar}
-          className="absolute top-0 left-0 bg-white p-4 ml-4 mt-4"
-        >
-          <Image src={ToggleSvg} alt="toggle" />
-        </button>
+        />
       )}
-    </div>
+      
+      {/* Sidebar */}
+      <div
+        className={`fixed md:relative transition-all duration-300 z-50  mb-8
+          ${sidebarWidth}
+          bg-[#101828] h-full max-h-full top-0 left-0 rounded-lg`}
+      >
+        {isSidebarOpen ? (
+          <>
+            <SidebarHeader />
+            <SidebarBody
+              openSections={openSections}
+              toggleSection={toggleSection}
+              selectedSubMenu={selectedSubMenu}
+              setSelectedSubMenu={setSelectedSubMenu}
+            />
+            <SidebarFooter />
+          </>
+        ) : (
+          <div className="bg-white h-full max-h-full flex flex-col items-center">
+            <button
+              onClick={toggleSidebar}
+              className="w-full h-12 flex items-center justify-center bg-white"
+            >
+              <Image src={OpenSidebar} alt="toggle" width={24} height={24} />
+            </button>
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 
 export default Sidebar;
-

@@ -65,21 +65,25 @@ const TreeItem: React.FC<TreeItemProps> = ({
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
             </svg>
           )}
-          <span className="text-gray-700 font-medium">{item?.name}</span>
-          <div className="opacity-0 group-hover:opacity-100 flex items-center gap-2 ml-auto">
-            <button
-              onClick={handleAddChild}
-              className="p-1 hover:bg-blue-100 rounded"
-            >
-              <Image src={AddIcon} alt="Add" />
-            </button>
-            <button
-              onClick={handleDelete}
-              className="p-1 hover:bg-red-100 rounded"
-            >
-              <Trash2 className="w-4 h-4 text-red-600" />
-            </button>
-          </div>
+          <span className="text-gray-700 font-medium flex items-center gap-2">
+            {item?.name}
+            {item.depth > 0 && (
+              <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={handleAddChild}
+                  className="p-1 hover:bg-blue-100 rounded"
+                >
+                  <Image src={AddIcon} alt="Add" />
+                </button>
+                <button
+                  onClick={handleDelete}
+                  className="p-1 hover:bg-red-100 rounded"
+                >
+                  <Trash2 className="w-4 h-4 text-red-600" />
+                </button>
+              </div>
+            )}
+          </span>
         </div>
       </div>
       {hasChildren && isExpanded && (

@@ -8,7 +8,7 @@ const SidebarHeader: React.FC = () => {
   const { toggleSidebar } = useSidebar();
 
   return (
-    <div className="flex items-center justify-between p-[30px] w-[240px] h-[84px] gap-[0px] opacity-[1]">
+    <div className="flex items-center justify-between p-[30px] w-full h-[84px] gap-[0px] opacity-[1]">
       <Image src={LogoSvg} alt="logo" />
       <button onClick={toggleSidebar}>
         <Image src={ToggleSvg} alt="toggle" />

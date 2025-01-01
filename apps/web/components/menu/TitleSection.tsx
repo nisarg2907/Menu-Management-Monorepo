@@ -12,12 +12,10 @@ const TitleSection: React.FC<TitleSectionProps> = ({
   icon = BlueMenuIcon 
 }) => {
   return (
-    <div className="fixed w-[1176px] h-[84px] top-[108px] left-[264px] p-[16px_48px] gap-[0px] flex justify-between opacity-100">
-      <div className="flex w-full h-[52px] gap-[16px] opacity-100">
-        <Image src={icon} alt="Section Icon" />
-        <span className="text-[#101828] font-sans font-extrabold text-[32px] leading-[40px] tracking-[-0.04em]">
-          {title}
-        </span>
+    <div className="w-full px-10 py-4">
+      <div className="flex items-center gap-4">
+        <Image src={icon} alt="Section Icon" className="w-[52px] h-[52px]" />
+        <h1 className="text-3xl font-bold text-gray-900">{title}</h1>
       </div>
     </div>
   );
